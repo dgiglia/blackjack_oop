@@ -48,13 +48,13 @@ end
 
 class Player 
   include Hand
-  attr_accessor :bet, :pocket, :name, :cards
+  attr_accessor :bet, :pocket, :name, :cards, :double_down
   def initialize(name)
     @name = name
     @pocket = 1000
     @bet = 0
     @cards = []
-    @double_down = nil
+    @double_down = false
   end 
     
   def place_bet
@@ -62,8 +62,8 @@ class Player
     if pocket > 50
       puts "How much would you like to bet on this hand? (Please enter whole numbers. Minimum bet is 50.)"
       ans = gets.chomp.to_i
-      until ans >= 50
-      puts "Enter a whole number, minimum of 50."
+      until (ans >= 50) && (ans < pocket)
+        puts "Enter a whole number, minimum of 50, maximum of #{pocket}."
         ans = gets.chomp.to_i
       end
       @bet += ans
@@ -115,7 +115,7 @@ class Player
         @bet += bet
         show_bet
         show_pocket
-        double_down = true
+        @double_down = true
       when "no" 
         return false
       else 
