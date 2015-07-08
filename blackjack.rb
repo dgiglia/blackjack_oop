@@ -93,7 +93,7 @@ class Player
     when "yes" 
       puts "You've surrendered. You lose half your bet."
       @pocket += (0.5 * bet)
-      bet = 0
+      @bet = 0
       show_pocket
       true
     when "no" 
@@ -140,7 +140,6 @@ def hit_or_stay(deck)
         break
       end
       add_card(deck.deal)
-      total = calculate_total
       puts "You chose to hit."
       display_add_card
       break if double_down
@@ -156,7 +155,15 @@ def hit_or_stay(deck)
     show_pocket
   end
   
-  def bust_msg
+  def lose_msg
+    puts "#{name}, you lost!"
+    puts "------------------------------"
+    puts ""
+    sleep 2
+    show_pocket
+  end
+
+def bust_msg
     puts "Bust!"
     puts "------------------------------"
     puts ""
@@ -193,10 +200,9 @@ class Dealer
   
   def hit_or_stay(deck)
     while calculate_total < 17
-    puts "Dealer hits."
-    add_card(deck.deal)
-    total = calculate_total
-    display_add_card
+      puts "Dealer hits."
+      add_card(deck.deal)
+      display_add_card
     end 
   end
 
@@ -213,6 +219,7 @@ class Deck
   SUIT = ['Clubs', 'Hearts', 'Diamonds', 'Spades']
   FACE = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace']
   attr_accessor :cards
+  
   def initialize(number_of_decks)
     @cards = []
     SUIT.each do |suit|
@@ -320,7 +327,7 @@ class Game
     @dealer.reveal_downcard
     if @dealer.has_21?
       puts "Dealer has blackjack!"
-      @player.bust_msg
+      @player.lose_msg
       ask_play_again
     end
     if @dealer.bust?
@@ -353,6 +360,7 @@ class Game
       if ans == "yes"
         @player.cards = []
         @player.bet = 0
+        @player.double_down = false
         @dealer.cards = []
         play
       else
@@ -373,9 +381,9 @@ class Game
     if push? 
       @player.push_msg
     elsif @dealer.has_21?
-      @player.bust_msg
+      @player.lose_msg
     elsif dealer_total_higher?
-      @player.bust_msg
+      @player.lose_msg
     elsif player_total_higher? 
       @player.win_msg
     end
